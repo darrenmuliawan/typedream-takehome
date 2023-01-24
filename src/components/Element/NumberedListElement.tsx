@@ -1,5 +1,5 @@
 import React from 'react';
-import { RenderElementProps } from 'slate-react';
+import { RenderElementProps, RenderLeafProps } from 'slate-react';
 
 interface NumberedListElementProps {
   style: any;
@@ -11,8 +11,10 @@ export const NumberedListElement = (props: Props) => {
   const {
     children,
     attributes,
-    style
+    style,
+    element
   } = props;
+
 
   return (
     <ol style={style} {...attributes}>

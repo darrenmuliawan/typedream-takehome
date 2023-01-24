@@ -1,10 +1,11 @@
 import { BulletedListElement, CodeElement, CustomEditor, HeadingOneElement, HeadingTwoElement, Leaf, NumberedListElement, QuoteElement, Toolbar } from '@components'
-import React, { useCallback, useState, KeyboardEvent } from 'react'
+import React, { useCallback, useState, KeyboardEvent, useMemo } from 'react'
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Text, Node, Element } from 'slate'
 import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react'
+import { withHistory } from 'slate-history';
 
 export const TextEditor = () => {
-  const [editor] = useState(() => withReact(createEditor()))
+  const editor = useMemo(() => withHistory(withReact(createEditor() as ReactEditor)), []);
   const initialValue: Descendant[] = [
     {
       type: 'paragraph',
@@ -76,14 +77,16 @@ export const TextEditor = () => {
     {
       type: 'numbered-list',
       children: [
-        { text: 'Ctrl + Z to enter numbered list.' },
+        { text: 'Ctrl + , to enter numbered list.' },
         { text: 'blah blah blah' },
       ],
     },
     {
       type: 'bulleted-list',
       children: [
-        { text: 'Ctrl + X to enter bulleted list.' },
+        { text: 'Ctrl + . to enter bulleted list.' },
+        { text: 'blah blah  blah' },
+        { text: 'blah blah  blah' },
       ],
     },
     {
@@ -115,15 +118,17 @@ export const TextEditor = () => {
       align: 'justify'
     },
   ]
+  const [value, setValue] = useState(initialValue);
 
   const renderElement = useCallback((props: RenderElementProps) => {
-    const style = { textAlign: props.element.align }
+    const style = { textAlign: props.element.align };
     switch (props.element.type) {
       case "code":
         return <CodeElement style={style} {...props} />
       case "quote":
         return <QuoteElement style={style} {...props} />
       case "numbered-list":
+        console.log(props);
         return <NumberedListElement style={style} {...props} />
       case "bulleted-list": 
         return <BulletedListElement style={style} {...props} />
@@ -223,15 +228,15 @@ export const TextEditor = () => {
         break
       }
 
-      // ctrl+z will make numbered list
-      case 'z': {
+      // ctrl+, will make numbered list
+      case ',': {
         e.preventDefault();
         CustomEditor.toggleNumberedList(editor);
         break
       }
 
-      // ctrl+x will make bulleted list
-      case 'x': {
+      // ctrl+. will make bulleted list
+      case '.': {
         e.preventDefault();
         CustomEditor.toggleBulletedList(editor);
         break
@@ -240,7 +245,7 @@ export const TextEditor = () => {
   }
 
   return (
-    <Slate editor={editor} value={initialValue}>
+    <Slate editor={editor} value={value} onChange={setValue}>
       <div className='bg-white text-black w-full max-w-[1000px] rounded'>
         <Toolbar />
         <Editable 

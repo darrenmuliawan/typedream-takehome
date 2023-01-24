@@ -13,7 +13,7 @@ export default function Home() {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       </Head>
       <div
-        className='flex justify-center h-[100vh] w-[100vw] p-5'
+        className='flex justify-center min-h-[100vh] w-[100vw] p-5 overflow-scroll'
       >
         <TextEditor />
       </div>
