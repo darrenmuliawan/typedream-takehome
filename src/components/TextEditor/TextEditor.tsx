@@ -3,10 +3,55 @@ import React, { useCallback, useState, KeyboardEvent, useMemo } from 'react'
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Text, Node, Element } from 'slate'
 import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react'
 import { withHistory } from 'slate-history';
+import { ListType, withLists, withListsReact, onKeyDown } from '@prezly/slate-lists';
+
+
+const withListsPlugin = withLists({
+  isConvertibleToListTextNode(node: Node) {
+    return Element.isElementType(node, 'paragraph');
+  },
+  isDefaultTextNode(node: Node) {
+    return Element.isElementType(node, "paragraph");
+  },
+  isListNode(node: Node, type?: ListType) {
+    if (type) {
+      return Element.isElementType(node, type);
+    }
+    return (
+      Element.isElementType(node, 'ordered-list') ||
+      Element.isElementType(node, 'unordered-list')
+    )
+  },
+  isListItemNode(node: Node) {
+    return Element.isElementType(node, 'list-item');
+  },
+  isListItemTextNode(node: Node) {
+    return Element.isElementType(node, 'list-item-text')
+  },
+  createDefaultTextNode() {
+    return { children: [{ text: '' }], type: 'paragraph'}
+  },
+  createListNode(type: ListType = ListType.UNORDERED) {
+    const nodeType = type === ListType.ORDERED ? 'ordered-list' : 'unordered-list';
+    return { type: nodeType, children: [{ type: 'list-item', children: [{ type: 'list-item-text', children: [{ text: '' }]}] }] }
+  },
+  createListItemNode() {
+    return { type: 'list-item', children: [{ type: 'list-item-text', children: [{ text: '' }] }] }
+  },
+  createListItemTextNode() {
+    return { children: [{ text: '' }], type: 'list-item-text' }
+  },
+})
 
 export const TextEditor = () => {
-  const editor = useMemo(() => withHistory(withReact(createEditor() as ReactEditor)), []);
+  const editor = useMemo(() => withListsReact(withListsPlugin(withHistory(withReact(createEditor() as ReactEditor)))), []);
   const initialValue: Descendant[] = [
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\n\n\n\n\n' },
+      ],
+    },
     {
       type: 'paragraph',
       children: [
@@ -65,6 +110,29 @@ export const TextEditor = () => {
     {
       type: 'paragraph',
       children: [
+        { text: 'Ctrl+, to make ordered list' },
+      ],
+    },
+    {
+      type: 'ordered-list',
+      children: [
+          {
+              type: "list-item",
+              children: [{ type: "list-item-text", children: [{ text: 'One' }] }],
+          },
+          {
+              type: "list-item",
+              children: [{ type: "list-item-text", children: [{ text: 'Two' }] }],
+          },
+          {
+              type: "list-item",
+              children: [{ type: "list-item-text", children: [{ text: 'Three' }] }],
+          },
+      ],
+    },
+    {
+      type: 'paragraph',
+      children: [
         { text: '\nCtrl + \' to enter quote block.' },
       ],
     },
@@ -75,45 +143,53 @@ export const TextEditor = () => {
       ],
     },
     {
-      type: 'numbered-list',
+      type: 'paragraph',
       children: [
-        { text: 'Ctrl + , to enter numbered list.' },
-        { text: 'blah blah blah' },
+        { text: 'Ctrl+. to make unordered list' },
       ],
     },
     {
-      type: 'bulleted-list',
-      children: [
-        { text: 'Ctrl + . to enter bulleted list.' },
-        { text: 'blah blah  blah' },
-        { text: 'blah blah  blah' },
-      ],
+        type: "unordered-list",
+        children: [
+            {
+                type: "list-item",
+                children: [{ type: "list-item-text", children: [{ text: 'Red' }] }],
+            },
+            {
+                type: "list-item",
+                children: [{ type: "list-item-text", children: [{ text: 'Green' }] }],
+            },
+            {
+                type: "list-item",
+                children: [{ type: "list-item-text", children: [{ text: 'Blue' }] }],
+            },
+        ],
     },
     {
       type: 'paragraph',
       children: [
-        { text: '\nCtrl + A to left align.' },
+        { text: '\nCtrl + L to left align.' },
       ],
       align: 'left'
     },
     {
       type: 'paragraph',
       children: [
-        { text: '\nCtrl + S to center align.' },
+        { text: '\nCtrl + Y to center align.' },
       ],
       align: 'center'
     },
     {
       type: 'paragraph',
       children: [
-        { text: '\nCtrl + D to right align.' },
+        { text: '\nCtrl + O to right align.' },
       ],
       align: 'right'
     },
     {
       type: 'paragraph',
       children: [
-        { text: '\nCtrl + F to justify align.' },
+        { text: '\nCtrl + J to justify align.' },
       ],
       align: 'justify'
     },
@@ -127,16 +203,19 @@ export const TextEditor = () => {
         return <CodeElement style={style} {...props} />
       case "quote":
         return <QuoteElement style={style} {...props} />
-      case "numbered-list":
-        console.log(props);
+      case "ordered-list":
         return <NumberedListElement style={style} {...props} />
-      case "bulleted-list": 
+      case "unordered-list": 
         return <BulletedListElement style={style} {...props} />
+      case "list-item": 
+        return <li {...props.attributes}>{props.children}</li>
+      case "list-item-text": 
+        return <div {...props.attributes}>{props.children}</div>
       case "h1":
         return <HeadingOneElement style={style} {...props} />
       case "h2": 
         return <HeadingTwoElement style={style} {...props} />
-      default:
+      case "paragraph":
         return <p style={style} {...props.attributes}>{props.children}</p>
     }
   }, []);
@@ -147,6 +226,7 @@ export const TextEditor = () => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (!e.ctrlKey) {
+      onKeyDown(editor, e);
       return;
     }
     
@@ -200,29 +280,29 @@ export const TextEditor = () => {
         break
       }
 
-      // ctrl+a will left aligned
-      case 'a': {
+      // ctrl+l will left aligned
+      case 'l': {
         e.preventDefault();
         CustomEditor.toggleLeftAlign(editor);
         break
       }
 
-      // ctrl+s will center aligned
-      case 's': {
+      // ctrl+y will center aligned
+      case 'y': {
         e.preventDefault();
         CustomEditor.toggleCenterAlign(editor);
         break
       }
 
-      // ctrl+d will right aligned
-      case 'd': {
+      // ctrl+u will right aligned
+      case 'o': {
         e.preventDefault();
         CustomEditor.toggleRightAlign(editor);
         break
       }
 
-      // ctrl+f will justified
-      case 'f': {
+      // ctrl+j will justified
+      case 'j': {
         e.preventDefault();
         CustomEditor.toggleJustifyAlign(editor);
         break

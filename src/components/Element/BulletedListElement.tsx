@@ -16,9 +16,7 @@ export const BulletedListElement = (props: Props) => {
 
   return (
     <ul style={style} {...attributes}>
-      {children.map((child: any, index: number) => (
-        <li key={index}>{child}</li>
-      ))}
+      {children}
     </ul>
   )
 }

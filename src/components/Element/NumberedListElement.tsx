@@ -12,15 +12,12 @@ export const NumberedListElement = (props: Props) => {
     children,
     attributes,
     style,
-    element
   } = props;
 
 
   return (
     <ol style={style} {...attributes}>
-      {children.map((child: any, index: number) => (
-        <li key={index}>{child}</li>
-      ))}
+      {children}
     </ol>
   )
 }

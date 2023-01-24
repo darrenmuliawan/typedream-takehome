@@ -1,3 +1,4 @@
+import { ListsEditor, ListType } from "@prezly/slate-lists";
 import { Editor, Element, Text, Transforms } from "slate"
 import { CustomEditor as CustomEditorInterface } from "../TextEditor/types"
 
@@ -51,7 +52,7 @@ export const CustomEditor = {
 
   isNumberedListActive(editor: CustomEditorInterface) {
     const [match] = Editor.nodes(editor, {
-      match: n => Element.isElement(n) && n.type === 'numbered-list'
+      match: n => Element.isElement(n) && n.type === 'ordered-list'
     })
 
     return !!match;
@@ -59,7 +60,7 @@ export const CustomEditor = {
 
   isBulletedListActive(editor: CustomEditorInterface) {
     const [match] = Editor.nodes(editor, {
-      match: n => Element.isElement(n) && n.type === 'bulleted-list'
+      match: n => Element.isElement(n) && n.type === 'unordered-list'
     })
 
     return !!match;
@@ -162,20 +163,24 @@ export const CustomEditor = {
 
   toggleNumberedList(editor: CustomEditorInterface) {
     const isActive = CustomEditor.isNumberedListActive(editor);
-    Transforms.setNodes(
-      editor,
-      { type: isActive ? undefined : "numbered-list" },
-      { match: n => Editor.isBlock(editor, n) }
-    )
+
+    if (isActive) {
+      ListsEditor.decreaseDepth(editor);
+    } else {
+      ListsEditor.increaseDepth(editor);
+      ListsEditor.setListType(editor, ListType.ORDERED);
+    }
   },
 
   toggleBulletedList(editor: CustomEditorInterface) {
     const isActive = CustomEditor.isBulletedListActive(editor);
-    Transforms.setNodes(
-      editor,
-      { type: isActive ? undefined : "bulleted-list" },
-      { match: n => Editor.isBlock(editor, n) }
-    )
+
+    if (isActive) {
+      ListsEditor.decreaseDepth(editor);
+    } else {
+      ListsEditor.increaseDepth(editor);
+      ListsEditor.setListType(editor, ListType.UNORDERED);
+    }
   },
 
   toggleLeftAlign(editor: CustomEditorInterface) {
