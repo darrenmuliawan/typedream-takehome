@@ -49,7 +49,12 @@ export const TextEditor = () => {
     {
       type: 'paragraph',
       children: [
-        { text: '\n\n\n\n\n' },
+        { text: '\n' },
+        { text: '\n' },
+        { text: '\n' },
+        { text: '\n' },
+        { text: '\n' },
+        { text: '\n' },
       ],
     },
     {
