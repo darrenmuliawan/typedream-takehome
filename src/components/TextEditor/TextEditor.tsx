@@ -15,7 +15,32 @@ export const TextEditor = () => {
     {
       type: 'paragraph',
       children: [
-        { text: '\nPress Ctrl + ` to enter code block.' },
+        { text: '\nCtrl + B to make' },
+        { text: ' bold ', bold: true },
+        { text: 'text.' }
+      ],
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\nCtrl + I to make' },
+        { text: ' italic ', italic: true },
+        { text: 'text.' }
+      ],
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\nCtrl + U to make ' },
+        { text: 'underline', underline: true },
+        { text: ' text.' }
+      ],
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\n'},
+        { text: 'Press Ctrl + ` to enter code block.' },
       ],
     },
     {
@@ -25,9 +50,21 @@ export const TextEditor = () => {
       ],
     },
     {
+      type: 'h1',
+      children: [
+        { text: '\nCtrl + 1 to make <h1>' },
+      ],
+    },
+    {
+      type: 'h2',
+      children: [
+        { text: '\nCtrl + 2 to make <h2>' },
+      ],
+    },
+    {
       type: 'paragraph',
       children: [
-        { text: '\nPress Ctrl + \' to enter quote block.' },
+        { text: '\nCtrl + \' to enter quote block.' },
       ],
     },
     {
@@ -37,10 +74,45 @@ export const TextEditor = () => {
       ],
     },
     {
+      type: 'numbered-list',
+      children: [
+        { text: 'Ctrl + Z to enter numbered list.' },
+        { text: 'blah blah blah' },
+      ],
+    },
+    {
+      type: 'bulleted-list',
+      children: [
+        { text: 'Ctrl + X to enter bulleted list.' },
+      ],
+    },
+    {
       type: 'paragraph',
       children: [
-        { text: '\nHighlight text and press Ctrl + B to make bold text.' },
+        { text: '\nCtrl + A to left align.' },
       ],
+      align: 'left'
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\nCtrl + S to center align.' },
+      ],
+      align: 'center'
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\nCtrl + D to right align.' },
+      ],
+      align: 'right'
+    },
+    {
+      type: 'paragraph',
+      children: [
+        { text: '\nCtrl + F to justify align.' },
+      ],
+      align: 'justify'
     },
   ]
 

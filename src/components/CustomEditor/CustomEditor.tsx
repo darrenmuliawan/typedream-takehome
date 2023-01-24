@@ -3,30 +3,18 @@ import { CustomEditor as CustomEditorInterface } from "../TextEditor/types"
 
 export const CustomEditor = {
   isBoldMarkActive(editor: CustomEditorInterface) {
-    const [match] = Editor.nodes(editor, {
-      match: n => Text.isText(n) && n.bold === true,
-      universal: true
-    });
-
-    return !!match
+    const marks = Editor.marks(editor);
+    return marks ? marks['bold'] === true : false
   },
 
   isItalicActive(editor: CustomEditorInterface) {
-    const [match] = Editor.nodes(editor, {
-      match: n => Text.isText(n) && n.italic === true,
-      universal: true
-    });
-
-    return !!match
+    const marks = Editor.marks(editor);
+    return marks ? marks['italic'] === true : false
   },
 
   isUnderlineActive(editor: CustomEditorInterface) {
-    const [match] = Editor.nodes(editor, {
-      match: n => Text.isText(n) && n.underline === true,
-      universal: true
-    });
-
-    return !!match
+    const marks = Editor.marks(editor);
+    return marks ? marks['underline'] === true : false
   },
 
   isCodeBlockActive(editor: CustomEditorInterface) {
@@ -111,29 +99,29 @@ export const CustomEditor = {
 
   toggleBoldMark(editor: CustomEditorInterface) {
     const isActive = CustomEditor.isBoldMarkActive(editor);
-    Transforms.setNodes(
-      editor,
-      { bold: isActive ? undefined : true },
-      { match: n => Text.isText(n), split: true }
-    )
+    if (isActive) {
+      Editor.removeMark(editor, 'bold');
+    } else {
+      Editor.addMark(editor, 'bold', true)
+    }
   },
 
   toggleItalicMark(editor: CustomEditorInterface) {
     const isActive = CustomEditor.isItalicActive(editor);
-    Transforms.setNodes(
-      editor,
-      { italic: isActive ? undefined : true },
-      { match: n => Text.isText(n), split: true }
-    )
+    if (isActive) {
+      Editor.removeMark(editor, 'italic');
+    } else {
+      Editor.addMark(editor, 'italic', true)
+    }
   },
 
   toggleUnderlineMark(editor: CustomEditorInterface) {
     const isActive = CustomEditor.isUnderlineActive(editor);
-    Transforms.setNodes(
-      editor,
-      { underline: isActive ? undefined : true },
-      { match: n => Text.isText(n), split: true }
-    )
+    if (isActive) {
+      Editor.removeMark(editor, 'underline');
+    } else {
+      Editor.addMark(editor, 'underline', true)
+    }
   },
 
   toggleHeading1Mark(editor: CustomEditorInterface) {
